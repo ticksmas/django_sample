@@ -1,0 +1,9 @@
+{% if lista %}
+	<ul>
+	{% for pessoa in lista %}
+		<li><a href="/people/detalhar/{{ pessoa.id }}/">{{pessoa}}</a></li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>Não há pessoas cadastradas</p>
+{% endif %}

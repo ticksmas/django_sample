@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import loader
 
 from ..models import Pessoa, Endereco
 
@@ -13,16 +14,16 @@ def home(request):
 @csrf_exempt
 @require_http_methods(["POST","GET"])
 def listar(request):
-	lista = Pessoa.objects.all()
-	html = "<ul>"
-	for p in lista:
-		html+=f"<li>{p.nome} (id={p.id})</li>"
-	html+= "</ul>"
-	return HttpResponse(html)
+	result = Pessoa.objects.all()
+	template = loader.get_template('listar.html')
+	context = {
+		'lista' : result,
+	}
+	return HttpResponse(template.render(context, request))
 
 def detalhar(request, id_pessoa):
 	pessoa = Pessoa.objects.get(id=id_pessoa)
-	return HttpResponse(f"Detalhou {pessoa.nome} (id={pessoa.id})")
+	return HttpResponse(pessoa)
 
 def excluir(request, id_pessoa):
 	try:
@@ -33,6 +34,11 @@ def excluir(request, id_pessoa):
 		return HttpResponse("Pessoa não encontrada")
 
 def cadastrar(request):
-	p = Pessoa(nome="Matheus", idade=21)
+	p = Pessoa(nome="Juca", idade="39")
 	p.save()
-	return HttpResponse(f"{p.nome} cadastrado com sucesso (id={p.id})")
+
+	end = Endereco(pessoa=p, logradouro="Av do Contorno",
+			numero=200, bairro="Centro", cep="31456-789")
+	end.save()
+
+	return HttpResponse(f"{p.nome} cadastrado com sucesso (id={p.endereco})")
