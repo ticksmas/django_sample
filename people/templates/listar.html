@@ -1,9 +1,19 @@
+<a href="/people/cadastro">Cadastrar Novo</a>
+<br>
+{% load static %}
 {% if lista %}
 	<ul>
 	{% for pessoa in lista %}
-		<li><a href="/people/detalhar/{{ pessoa.id }}/">{{pessoa}}</a></li>
+		<!-- li><a href="/people/detalhar/{{ pessoa.id }}/">{{pessoa}}</a></li -->
+		<li>
+			<a href="{% url 'detalhar' pessoa.id %}">{{pessoa}}</a>
+			<a href="{% url 'excluir' pessoa.id %}">
+				<img src="{% static 'excluir.png' %}" width="20" height="20">
+			</a>
+		</li>
 	{% endfor %}
 	</ul>
+
 {% else %}
 	<p>Não há pessoas cadastradas</p>
 {% endif %}

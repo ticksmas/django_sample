@@ -4,7 +4,8 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
-
+from django.shortcuts import render
+from datetime import datetime
 from ..models import Pessoa, Endereco
 
 @require_http_methods(["GET","POST"])
@@ -15,6 +16,7 @@ def home(request):
 @require_http_methods(["POST","GET"])
 def listar(request):
 	result = Pessoa.objects.all()
+	#result = Pessoa.objects.retorna_C()
 	template = loader.get_template('listar.html')
 	context = {
 		'lista' : result,
@@ -23,7 +25,8 @@ def listar(request):
 
 def detalhar(request, id_pessoa):
 	pessoa = Pessoa.objects.get(id=id_pessoa)
-	return HttpResponse(pessoa)
+	context = {'pessoa':pessoa}
+	return render(request, 'detalhe.html', context)
 
 def excluir(request, id_pessoa):
 	try:
@@ -33,12 +36,23 @@ def excluir(request, id_pessoa):
 	except ObjectDoesNotExist:
 		return HttpResponse("Pessoa não encontrada")
 
+def cadastro(request):
+	sexos = ['Masculino','Feminino']
+	template = loader.get_template('cadastrar.html')
+	context = {
+		'sexos': sexos,
+	}
+	return HttpResponse(template.render(context, request))
+
 def cadastrar(request):
-	p = Pessoa(nome="Juca", idade="39")
-	p.save()
+	dtNascimento = datetime.strptime(request.POST['dtNascimento'], "%d/%m/%Y").date()
+	p = Pessoa.objects.nova(request.POST['nome'],
+			request.POST['idade'],
+			dtNascimento,
+			request.POST['cpf'],
+			request.POST['logradouro'],
+			request.POST['numero'],
+			request.POST['bairro'],
+			request.POST['cep'])
 
-	end = Endereco(pessoa=p, logradouro="Av do Contorno",
-			numero=200, bairro="Centro", cep="31456-789")
-	end.save()
-
-	return HttpResponse(f"{p.nome} cadastrado com sucesso (id={p.endereco})")
+	return HttpResponse(f"{p} cadastrado com sucesso")

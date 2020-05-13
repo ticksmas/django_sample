@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<form action="/people/cadastrar/" method="post">
+		{% csrf_token %}
+		<p>Nome: <input type="text" name="nome"></p>
+		<p>Idade: <input type="text" name="idade"></p>
+		<p>Nascimento: <input type="text" name="dtNascimento"></p>
+		<p>CPF: <input type="text" name="cpf"></p>
+		<p>Logradouro: <input type="text" name="logradouro"></p>
+		<p>Número: <input type="text" name="numero"></p>
+		<p>Bairro: <input type="text" name="bairro"></p>
+		<p>CEP: <input type="text" name="cep"></p>
+		<p><input type="submit" name="Enviar"></p>
+	</form>
+</body>
+</html>
